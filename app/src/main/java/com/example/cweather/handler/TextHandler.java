@@ -1,4 +1,4 @@
-package com.example.cweather;
+package com.example.cweather.handler;
 
 public class TextHandler {
     private static String text;

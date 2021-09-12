@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.cweather.handler.TextHandler;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SelectReminder extends AppCompatActivity {
