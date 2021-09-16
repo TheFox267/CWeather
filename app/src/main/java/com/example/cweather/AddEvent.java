@@ -50,12 +50,6 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     private TextView textStart, textEnd, textSelectRem, textSelectColor;
     private Converter converter = new Converter();
 
-    public static String formatDateToString(long date) {
-        // Из миллисекунд в строковую дату
-        Locale locale = new Locale("ru");
-        SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT, locale);
-        return dateFormat.format(date);
-    }
 
     public static String addHourMinute(String date, int hour, int minute) throws ParseException {
         // Добавить к строке часы и минуты
@@ -157,18 +151,13 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
 
     private void addEvent() {
         eventDataBase = EventDataBase.getInstance(this);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(formatStringToDate(date));
-        Calendar startTime = Calendar.getInstance();
-        startTime.setTime(formatStringToDate(textStart.getText().toString()));
-        Calendar endTime = Calendar.getInstance();
-        endTime.setTime(formatStringToDate(textEnd.getText().toString()));
         String name = inputEvent.getEditText().getText().toString();
         String place = inputPlace.getEditText().getText().toString();
         String desc = inputDecs.getEditText().getText().toString();
         String reminder = textSelectRem.getText().toString();
         int color = color_back;
-        Event event = new Event(calendar, startTime, endTime, name, place, desc, reminder, color);
+//        Log.d(TAG, date);
+        Event event = new Event(date, textStart.getText().toString(), textEnd.getText().toString(), name, place, desc, reminder, color);
         eventDataBase.getEventDao().insertEvent(event).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
@@ -202,20 +191,6 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
 
     }
 
-    private Date formatStringToDate(String date) {
-        Locale locale = new Locale("ru");
-        SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT, locale);
-        try {
-            Date date1 = dateFormat.parse(date);
-            return date1;
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-        return null;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,7 +201,7 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         initToolbar();
         // Получение даты
         long selectedDate = getIntent().getLongExtra("selectedDate", -1);
-        date = formatDateToString(selectedDate);
+        date = converter.fromLongToString(selectedDate);
         now = Calendar.getInstance();
         // Кнопка, начало мероприятия
         textStart.setText(date);

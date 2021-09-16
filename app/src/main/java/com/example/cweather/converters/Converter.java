@@ -1,7 +1,6 @@
 package com.example.cweather.converters;
 
 import androidx.annotation.NonNull;
-import androidx.room.TypeConverter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,16 +16,16 @@ public class Converter {
     /**
      * Конвертировать из Calendar в long
      */
-    @TypeConverter
-    public long fromCalendarToLong(Calendar calendar) {
+
+    public static Long fromCalendarToLong(Calendar calendar) {
         return calendar.getTimeInMillis();
     }
 
     /**
      * Конвертировать из long в Calendar
      */
-    @TypeConverter
-    public Calendar fromLongToCalendar(long data) {
+
+    public static Calendar fromLongToCalendar(Long data) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(data);
         return calendar;
@@ -35,7 +34,6 @@ public class Converter {
     /**
      * Конвертировать из Date в Calendar
      */
-    @TypeConverter
     public Calendar fromDateToCalendar(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -45,7 +43,6 @@ public class Converter {
     /**
      * Конвертировать из Calendar в Date
      */
-    @TypeConverter
     public Date fromCalendarToDate(@NonNull Calendar calendar) {
         return calendar.getTime();
     }
@@ -53,7 +50,6 @@ public class Converter {
     /**
      * Конвертировать из String в Date
      */
-    @TypeConverter
     public Date fromStringToDate(String str) throws ParseException {
         return simpleDateFormat.parse(str);
     }
@@ -61,7 +57,7 @@ public class Converter {
     /**
      * Конвертировать из Calendar в String
      */
-    @TypeConverter
+
     public String fromCalendarToString(Calendar calendar) {
         return simpleDateFormat.format(fromCalendarToDate(calendar));
     }
@@ -69,12 +65,16 @@ public class Converter {
     /**
      * Конвертировать из String в Calendar
      */
-    @TypeConverter
+
     public Calendar fromStringToCalendar(String str) throws ParseException {
         Date date = simpleDateFormat.parse(str);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar;
+    }
+
+    public String fromLongToString(long date) {
+        return simpleDateFormat.format(date);
     }
 
 }

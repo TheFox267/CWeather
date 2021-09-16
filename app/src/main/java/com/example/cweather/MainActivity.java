@@ -32,11 +32,11 @@ import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String TAG = "TheFoxLog";
+    private static final String TAG = "TheFoxLog";
     private final Converter converter = new Converter();
-    public RecyclerView recyclerView;
-    public EventAdapter eventAdapter;
-    EventDataBase eventDataBase;
+    private RecyclerView recyclerView;
+    private EventAdapter eventAdapter;
+    private EventDataBase eventDataBase;
     private FloatingActionButton btnAdd;
     private CalendarView calendarView;
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         eventDataBase = EventDataBase.getInstance(this);
         initWidgets();
-        initViewModel();
+        initCalendarView();
         initRecyclerView();
         // Floating action button
         btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -62,8 +62,7 @@ public class MainActivity extends AppCompatActivity {
         calendarView.setOnDayClickListener(new OnDayClickListener() {
             @Override
             public void onDayClick(EventDay eventDay) {
-
-                eventDataBase.getEventDao().getEventsByDate(eventDay.getCalendar()).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new SingleObserver<List<Event>>() {
+                eventDataBase.getEventDao().getEventsByDate(converter.fromCalendarToString(eventDay.getCalendar())).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new SingleObserver<List<Event>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         Log.d(TAG, d.toString());
@@ -72,18 +71,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(@NonNull List<Event> events) {
                         try {
-                            eventAdapter.setData(events);
-                            recyclerView.setAdapter(eventAdapter);
+                            eventAdapter.setEventList(events);
                         } catch (NullPointerException exception) {
                             Log.e(TAG, exception.getMessage());
                         }
-
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
                         Log.e(TAG, e.getMessage());
-
                     }
                 });
             }
@@ -91,15 +87,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initViewModel() {
+    private void initCalendarView() {
         eventDataBase.getEventDao().getEventsBase().subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<EventBase>>() {
             @Override
             public void accept(List<EventBase> eventBases) throws Throwable {
                 if (eventBases.size() > 0) {
                     List<EventDay> eventDays = new ArrayList<>();
-                    Converter converter = new Converter();
                     for (EventBase eventBase : eventBases) {
-                        EventIndicator eventIndicator = new EventIndicator(eventBase.date, new ColorDrawable(eventBase.color));
+                        EventIndicator eventIndicator = new EventIndicator(converter.fromStringToCalendar(eventBase.dateCalendar),
+                                new ColorDrawable(eventBase.color));
                         eventDays.add(eventIndicator);
                     }
                     calendarView.setEvents(eventDays);
@@ -120,11 +116,13 @@ public class MainActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         // RecyclerView
         recyclerView = findViewById(R.id.recView);
-        // EventDataBase
+
     }
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
+        eventAdapter = new EventAdapter();
+        recyclerView.setAdapter(eventAdapter);
     }
 }

@@ -1,6 +1,5 @@
 package com.example.cweather.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,33 +11,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cweather.R;
 import com.example.cweather.database.Event;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
-    private List<Event> eventList;
-    private Context context;
+    private List<Event> eventList = new ArrayList<>();
 
-    public EventAdapter() {
+    public void setEventList(Collection<Event> events) {
+        eventList.addAll(events);
+        notifyDataSetChanged();
     }
 
-    public void setData(List<Event> eventList) {
-        this.eventList = eventList;
+    public void clearEventList() {
+        eventList.clear();
         notifyDataSetChanged();
-
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.list_item, parent, false));
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Event event = eventList.get(position);
-        String name = event.getName();
-        holder.textName.setText(name);
+        holder.bind(eventList.get(position));
 
     }
 
@@ -48,11 +47,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textName;
+        private final TextView textName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textName = itemView.findViewById(R.id.textNameEvent);
+        }
+
+        public void bind(Event event) {
+            textName.setText(event.name);
         }
     }
 }

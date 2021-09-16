@@ -3,9 +3,6 @@ package com.example.cweather.database;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.example.cweather.converters.Converter;
 
 import java.util.Calendar;
 
@@ -14,17 +11,14 @@ public class Event {
     @PrimaryKey(autoGenerate = true)
     public int eventId;
 
-    @ColumnInfo(name = "date")
-    @TypeConverters({Converter.class})
-    public Calendar date;
+    @ColumnInfo(name = "dateCalendar")
+    public String dateCalendar;
 
     @ColumnInfo(name = "timeStart")
-    @TypeConverters({Converter.class})
-    public Calendar timeStart;
+    public String timeStart;
 
     @ColumnInfo(name = "timeEnd")
-    @TypeConverters({Converter.class})
-    public Calendar timeEnd;
+    public String timeEnd;
 
     @ColumnInfo(name = "name")
     public String name;
@@ -41,17 +35,6 @@ public class Event {
     @ColumnInfo(name = "color")
     public int color;
 
-    public Event(Calendar date, Calendar timeStart, Calendar timeEnd, String name, String place, String desc, String reminder, int color) {
-        this.date = date;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.name = name;
-        this.place = place;
-        this.desc = desc;
-        this.reminder = reminder;
-        this.color = color;
-    }
-
     public int getEventId() {
         return eventId;
     }
@@ -60,27 +43,27 @@ public class Event {
         this.eventId = eventId;
     }
 
-    public Calendar getDate() {
-        return date;
+    public String getDateCalendar() {
+        return dateCalendar;
     }
 
-    public void setDate(Calendar date) {
-        this.date = date;
+    public void setDateCalendar(String dateCalendar) {
+        this.dateCalendar = dateCalendar;
     }
 
-    public Calendar getTimeStart() {
+    public String getTimeStart() {
         return timeStart;
     }
 
-    public void setTimeStart(Calendar timeStart) {
+    public void setTimeStart(String timeStart) {
         this.timeStart = timeStart;
     }
 
-    public Calendar getTimeEnd() {
+    public String getTimeEnd() {
         return timeEnd;
     }
 
-    public void setTimeEnd(Calendar timeEnd) {
+    public void setTimeEnd(String timeEnd) {
         this.timeEnd = timeEnd;
     }
 
@@ -121,6 +104,17 @@ public class Event {
     }
 
     public void setColor(int color) {
+        this.color = color;
+    }
+
+    public Event(String dateCalendar, String timeStart, String timeEnd, String name, String place, String desc, String reminder, int color) {
+        this.dateCalendar = dateCalendar;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.name = name;
+        this.place = place;
+        this.desc = desc;
+        this.reminder = reminder;
         this.color = color;
     }
 }
