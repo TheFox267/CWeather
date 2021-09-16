@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">CWeather</string>
-    <string name="material_calendar_monday">M</string>
-    <string name="material_calendar_tuesday">T</string>
-    <string name="material_calendar_wednesday">W</string>
-    <string name="material_calendar_thursday">T</string>
-    <string name="material_calendar_friday">F</string>
-    <string name="material_calendar_saturday">S</string>
-    <string name="material_calendar_sunday">S</string>
+    <string name="material_calendar_monday">П</string>
+    <string name="material_calendar_tuesday">В</string>
+    <string name="material_calendar_wednesday">С</string>
+    <string name="material_calendar_thursday">Ч</string>
+    <string name="material_calendar_friday">П</string>
+    <string name="material_calendar_saturday">С</string>
+    <string name="material_calendar_sunday">В</string>
     <string name="chooseColor">Выбрать цвет</string>
 
     <array name="material_calendar_months_array">
@@ -24,7 +24,7 @@
         <item>December</item>
     </array>
 
-    <string name="material_calendar_today_button">Today</string>
-    <string name="material_calendar_positive_button">OK</string>
-    <string name="material_calendar_negative_button">Cancel</string>
+    <string name="material_calendar_today_button">Сегодня</string>
+    <string name="material_calendar_positive_button">Ок</string>
+    <string name="material_calendar_negative_button">Отмена</string>
 </resources>

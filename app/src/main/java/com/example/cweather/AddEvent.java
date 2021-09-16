@@ -38,32 +38,38 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class AddEvent extends AppCompatActivity implements ColorPickerDialogListener {
-    private static final String TAG = "TheFoxLog";
-    private static final String FORMAT = "dd MMMM yyyy HH:mm";
-    public String date = "";
-    public Calendar now;
-    int color_back = Color.RED;
-    EventDataBase eventDataBase;
+    // Константы
+    public static final String TAG = MainActivity.TAG;
+    public static final Converter converter = MainActivity.converter;
+    public static final String FORMAT = MainActivity.FORMAT;
+    public static final Locale LOCALE = MainActivity.LOCALE;
+    // Переменные
+    private String date = "";
+    private Calendar now;
+    private int color_back = Color.RED;
     private TextInputLayout inputEvent, inputPlace, inputDecs;
     private LinearLayout btnStart, btnEnd, btnSelectRem, btnSelectColor;
     private Toolbar toolbar;
     private TextView textStart, textEnd, textSelectRem, textSelectColor;
-    private Converter converter = new Converter();
 
-
-    public static String addHourMinute(String date, int hour, int minute) throws ParseException {
-        // Добавить к строке часы и минуты
-        Locale locale = new Locale("ru");
-        SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT, locale);
+    /**
+     * Добавить часы и минуты
+     */
+    private String addHourMinute(String date, int hour, int minute) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT, LOCALE);
         Calendar calendar = Calendar.getInstance();
         Date selectedDate = dateFormat.parse(date);
-        assert selectedDate != null;
-        calendar.setTime(selectedDate);
+        if (selectedDate != null) {
+            calendar.setTime(selectedDate);
+        }
         calendar.add(Calendar.HOUR_OF_DAY, hour);
         calendar.add(Calendar.MINUTE, minute);
         return dateFormat.format(calendar.getTime());
     }
 
+    /**
+     * Установить и настроить toolbar окна
+     */
     private void initToolbar() {
         // Настройка toolbar
         setSupportActionBar(toolbar);
@@ -72,6 +78,9 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
+    /**
+     * Определить все объекты окна
+     */
     private void initWidgets() {
         // Buttons
         btnStart = findViewById(R.id.btnStart);
@@ -116,6 +125,9 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Проверить заполненность полей
+     */
     private void checkFields() throws ParseException {
         // Проверка всех полей
         if (inputEvent.getEditText().getText().toString().isEmpty()) {
@@ -149,14 +161,16 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
 
     }
 
+    /**
+     * Добавить событие в базу данных
+     */
     private void addEvent() {
-        eventDataBase = EventDataBase.getInstance(this);
+        EventDataBase eventDataBase = EventDataBase.getInstance(this);
         String name = inputEvent.getEditText().getText().toString();
         String place = inputPlace.getEditText().getText().toString();
         String desc = inputDecs.getEditText().getText().toString();
         String reminder = textSelectRem.getText().toString();
         int color = color_back;
-//        Log.d(TAG, date);
         Event event = new Event(date, textStart.getText().toString(), textEnd.getText().toString(), name, place, desc, reminder, color);
         eventDataBase.getEventDao().insertEvent(event).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
             @Override
@@ -177,6 +191,9 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         startActivity(new Intent(AddEvent.this, MainActivity.class));
     }
 
+    /**
+     * Вызвать диалоговое окно с выбором цвета
+     */
     private void createColorPickerDialog() {
         ColorPickerDialog.Builder builder = ColorPickerDialog.newBuilder();
         builder.setColor(Color.RED);
@@ -187,8 +204,6 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         builder.setDialogTitle(R.string.chooseColor);
         builder.setDialogId(100);
         builder.show(this);
-
-
     }
 
 
@@ -196,7 +211,6 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
-        // Инициализация объектов activity
         initWidgets();
         initToolbar();
         // Получение даты

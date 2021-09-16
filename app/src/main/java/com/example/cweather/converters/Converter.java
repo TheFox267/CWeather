@@ -16,7 +16,6 @@ public class Converter {
     /**
      * Конвертировать из Calendar в long
      */
-
     public static Long fromCalendarToLong(Calendar calendar) {
         return calendar.getTimeInMillis();
     }
@@ -24,7 +23,6 @@ public class Converter {
     /**
      * Конвертировать из long в Calendar
      */
-
     public static Calendar fromLongToCalendar(Long data) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(data);
@@ -57,7 +55,6 @@ public class Converter {
     /**
      * Конвертировать из Calendar в String
      */
-
     public String fromCalendarToString(Calendar calendar) {
         return simpleDateFormat.format(fromCalendarToDate(calendar));
     }
@@ -65,7 +62,6 @@ public class Converter {
     /**
      * Конвертировать из String в Calendar
      */
-
     public Calendar fromStringToCalendar(String str) throws ParseException {
         Date date = simpleDateFormat.parse(str);
         Calendar calendar = Calendar.getInstance();
@@ -73,6 +69,9 @@ public class Converter {
         return calendar;
     }
 
+    /**
+     * Конвертировать из long в String
+     */
     public String fromLongToString(long date) {
         return simpleDateFormat.format(date);
     }

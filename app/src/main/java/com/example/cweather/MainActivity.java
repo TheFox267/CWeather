@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -32,8 +33,12 @@ import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "TheFoxLog";
-    private final Converter converter = new Converter();
+    // Константы
+    public static final String TAG = "TheFoxLog";
+    public static final Converter converter = new Converter();
+    public static final String FORMAT = "dd MMMM yyyy HH:mm";
+    public static final Locale LOCALE = new Locale("ru");
+    // Переменные
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
     private EventDataBase eventDataBase;
@@ -44,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        eventDataBase = EventDataBase.getInstance(this);
         initWidgets();
         initCalendarView();
         initRecyclerView();
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(@NonNull List<Event> events) {
                         try {
+                            eventAdapter.clearEventList();
                             eventAdapter.setEventList(events);
                         } catch (NullPointerException exception) {
                             Log.e(TAG, exception.getMessage());
@@ -87,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Создать "наблюдателя" за базой данных. Когда пользователь создаёт новое событие, то обновляется индикация на
+     * календаре
+     */
     private void initCalendarView() {
         eventDataBase.getEventDao().getEventsBase().subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<EventBase>>() {
             @Override
@@ -107,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Инициализовать все объекты активити
+     * Определить все объекты данного окна
      */
     private void initWidgets() {
         // Floating Action Bar
@@ -116,9 +125,13 @@ public class MainActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         // RecyclerView
         recyclerView = findViewById(R.id.recView);
-
+        // EventDataBase
+        eventDataBase = EventDataBase.getInstance(this);
     }
 
+    /**
+     * Установить параметры для RecyclerView
+     */
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
