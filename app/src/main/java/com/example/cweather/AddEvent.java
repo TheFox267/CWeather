@@ -41,8 +41,8 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     // Константы
     public static final String TAG = MainActivity.TAG;
     public static final Converter converter = MainActivity.converter;
-    public static final String FORMAT = MainActivity.FORMAT;
-    public static final Locale LOCALE = MainActivity.LOCALE;
+    private static final String FORMAT = Converter.FORMAT;
+    private static final Locale LOCALE = Converter.LOCALE;
     // Переменные
     private String date = "";
     private Calendar now;
@@ -164,14 +164,15 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     /**
      * Добавить событие в базу данных
      */
-    private void addEvent() {
+    private void addEvent() throws ParseException {
         EventDataBase eventDataBase = EventDataBase.getInstance(this);
         String name = inputEvent.getEditText().getText().toString();
         String place = inputPlace.getEditText().getText().toString();
         String desc = inputDecs.getEditText().getText().toString();
         String reminder = textSelectRem.getText().toString();
         int color = color_back;
-        Event event = new Event(date, textStart.getText().toString(), textEnd.getText().toString(), name, place, desc, reminder, color);
+        Event event = new Event(date, converter.fromStringDateToStringHM(textStart.getText().toString()),
+                converter.fromStringDateToStringHM(textEnd.getText().toString()), name, place, desc, reminder, color);
         eventDataBase.getEventDao().insertEvent(event).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {

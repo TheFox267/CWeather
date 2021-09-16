@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener;
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
 import com.example.cweather.adapter.EventAdapter;
 import com.example.cweather.converters.Converter;
@@ -36,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     // Константы
     public static final String TAG = "TheFoxLog";
     public static final Converter converter = new Converter();
-    public static final String FORMAT = "dd MMMM yyyy HH:mm";
-    public static final Locale LOCALE = new Locale("ru");
+    private static final String FORMAT = Converter.FORMAT;
+    private static final Locale LOCALE = Converter.LOCALE;
     // Переменные
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
@@ -60,6 +61,18 @@ public class MainActivity extends AppCompatActivity {
                 long selectedDate = calendarView.getFirstSelectedDate().getTimeInMillis();
                 intent.putExtra("selectedDate", selectedDate);
                 startActivity(intent);
+            }
+        });
+        calendarView.setOnForwardPageChangeListener(new OnCalendarPageChangeListener() {
+            @Override
+            public void onChange() {
+                eventAdapter.clearEventList();
+            }
+        });
+        calendarView.setOnPreviousPageChangeListener(new OnCalendarPageChangeListener() {
+            @Override
+            public void onChange() {
+                eventAdapter.clearEventList();
             }
         });
         // Смена даты

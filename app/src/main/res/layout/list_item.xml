@@ -1,39 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     android:background="@drawable/border_for_item"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="16dp"
-    android:paddingTop="8dp"
+    android:paddingTop="16dp"
     android:paddingEnd="16dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="16dp"
+    android:weightSum="2">
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:contentDescription="TODO"
         android:src="@drawable/ic_baseline_event_note_24" />
 
-    <TextView
-        android:id="@+id/textNameEvent"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Первое мероприятие"
-        android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textTimeEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="12:25 13:25"
-        android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_weight="2"
+        android:orientation="vertical">
+        <!--Первое мероприятие-->
+        <TextView
+            android:id="@+id/textNameItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text=""
+            android:textSize="25sp"
+            android:textStyle="bold" />
+        <!--12:25-13:25-->
+        <TextView
+            android:id="@+id/textTimeItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text=""
+            android:textSize="20sp" />
+        <!--Hongong-->
+        <TextView
+            android:id="@+id/textPlaceItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text=""
+            android:textSize="20sp" />
+    </LinearLayout>
 
 
 </LinearLayout>

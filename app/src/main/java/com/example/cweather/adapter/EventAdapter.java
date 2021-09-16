@@ -47,15 +47,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textName;
+        private final TextView textName, textTime, textPlace;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textName = itemView.findViewById(R.id.textNameEvent);
+            textName = itemView.findViewById(R.id.textNameItem);
+            textTime = itemView.findViewById(R.id.textTimeItem);
+            textPlace = itemView.findViewById(R.id.textPlaceItem);
         }
 
         public void bind(Event event) {
             textName.setText(event.name);
+            textTime.setText(event.timeStart + " - " + event.timeEnd);
+            textPlace.setText(event.place);
+
         }
     }
 }

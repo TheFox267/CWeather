@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Converter {
-    private final String FORMAT = "dd MMMM yyyy HH:mm";
-    private final Locale LOCALE = new Locale("ru");
+    public static final String FORMAT = "dd MMMM yyyy HH:mm";
+    public static final Locale LOCALE = new Locale("ru");
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT, LOCALE);
 
     /**
@@ -76,4 +76,11 @@ public class Converter {
         return simpleDateFormat.format(date);
     }
 
+    /**
+     * Представить вместо полной даты, только часы и минуты
+     */
+    public String fromStringDateToStringHM(String str) throws ParseException {
+        SimpleDateFormat hhmm = new SimpleDateFormat("HH:mm", LOCALE);
+        return hhmm.format(fromStringToDate(str));
+    }
 }
