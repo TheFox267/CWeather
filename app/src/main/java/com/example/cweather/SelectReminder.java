@@ -14,6 +14,7 @@ import com.example.cweather.handler.TextHandler;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SelectReminder extends AppCompatActivity {
+    private static final String TAG = "SelectReminder";
     private Toolbar toolbar;
     private CheckBox checkBoxInStart, checkBoxFiveMinute, checkBoxFifteenMinute, checkBoxThirtyMinute, checkBoxOneHour,
             checkBoxFourHour, checkBoxOneDay, checkBoxTwoDay, checkBoxOneWeek;
@@ -193,6 +194,4 @@ public class SelectReminder extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     }
-
-
 }

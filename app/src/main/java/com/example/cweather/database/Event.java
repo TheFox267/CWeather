@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.cweather.converters.CalendarConverter;
+import com.example.cweather.converters.Converter;
 
 import java.util.Calendar;
 
@@ -13,23 +13,31 @@ import java.util.Calendar;
 public class Event {
     @PrimaryKey(autoGenerate = true)
     public int eventId;
+
     @ColumnInfo(name = "date")
-    @TypeConverters({CalendarConverter.class})
+    @TypeConverters({Converter.class})
     public Calendar date;
+
     @ColumnInfo(name = "timeStart")
-    @TypeConverters({CalendarConverter.class})
+    @TypeConverters({Converter.class})
     public Calendar timeStart;
+
     @ColumnInfo(name = "timeEnd")
-    @TypeConverters({CalendarConverter.class})
+    @TypeConverters({Converter.class})
     public Calendar timeEnd;
+
     @ColumnInfo(name = "name")
     public String name;
+
     @ColumnInfo(name = "place")
     public String place;
+
     @ColumnInfo(name = "desc")
     public String desc;
+
     @ColumnInfo(name = "reminder")
     public String reminder;
+
     @ColumnInfo(name = "color")
     public int color;
 
@@ -116,3 +124,5 @@ public class Event {
         this.color = color;
     }
 }
+
+

@@ -17,11 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.cweather.converters.Converter;
 import com.example.cweather.database.Event;
-import com.example.cweather.database.EventBase;
+import com.example.cweather.database.EventDataBase;
 import com.example.cweather.handler.TextHandler;
-import com.example.cweather.remote.DataCallBack;
-import com.example.cweather.remote.DataManager;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
@@ -31,21 +30,25 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
-public class AddEvent extends AppCompatActivity implements ColorPickerDialogListener, DataCallBack {
-    private static final String TAG = "TheFoxLogs";
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.CompletableObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+public class AddEvent extends AppCompatActivity implements ColorPickerDialogListener {
+    private static final String TAG = "TheFoxLog";
     private static final String FORMAT = "dd MMMM yyyy HH:mm";
     public String date = "";
     public Calendar now;
     int color_back = Color.RED;
+    EventDataBase eventDataBase;
     private TextInputLayout inputEvent, inputPlace, inputDecs;
     private LinearLayout btnStart, btnEnd, btnSelectRem, btnSelectColor;
     private Toolbar toolbar;
     private TextView textStart, textEnd, textSelectRem, textSelectColor;
-    private DataManager dataManager;
+    private Converter converter = new Converter();
 
     public static String formatDateToString(long date) {
         // Из миллисекунд в строковую дату
@@ -109,13 +112,17 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
                 finish();
                 break;
             case R.id.actionCreate:
-                checkFields();
+                try {
+                    checkFields();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void checkFields() {
+    private void checkFields() throws ParseException {
         // Проверка всех полей
         if (inputEvent.getEditText().getText().toString().isEmpty()) {
             inputEvent.setError("Поле не должно быть пустым");
@@ -123,7 +130,7 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         } else {
             inputEvent.setError(null);
         }
-        if (!Objects.requireNonNull(formatStringToDate(textStart.getText().toString())).before(formatStringToDate(textEnd.getText().toString()))) {
+        if (!converter.fromStringToDate(textStart.getText().toString()).before(converter.fromStringToDate(textEnd.getText().toString()))) {
             btnStart.setBackgroundResource(R.drawable.customborder);
             btnEnd.setBackgroundResource(R.drawable.customborder);
             Toast.makeText(AddEvent.this, "Время начала должно быть раньше, чем время окончания", Toast.LENGTH_SHORT).show();
@@ -149,25 +156,36 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     }
 
     private void addEvent() {
-
+        eventDataBase = EventDataBase.getInstance(this);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(formatStringToDate(date));
         Calendar startTime = Calendar.getInstance();
         startTime.setTime(formatStringToDate(textStart.getText().toString()));
         Calendar endTime = Calendar.getInstance();
         endTime.setTime(formatStringToDate(textEnd.getText().toString()));
-//        dataManager.addData(AddEvent.this, calendar, startTime, endTime, inputEvent.getEditText().getText().toString(),
-//                inputPlace.getEditText().getText().toString(), inputDecs.getEditText().getText().toString(),
-//                textSelectRem.getText().toString(), color_back);
-        startActivity(new Intent(AddEvent.this, MainActivity.class));
         String name = inputEvent.getEditText().getText().toString();
         String place = inputPlace.getEditText().getText().toString();
         String desc = inputDecs.getEditText().getText().toString();
         String reminder = textSelectRem.getText().toString();
         int color = color_back;
-        dataManager.addData(AddEvent.this, calendar, startTime, endTime, name, place, desc, reminder, color);
+        Event event = new Event(calendar, startTime, endTime, name, place, desc, reminder, color);
+        eventDataBase.getEventDao().insertEvent(event).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                Log.d(TAG, "Отследили подписку");
+            }
 
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "Событие успешно добавлено");
+            }
 
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+        });
+        startActivity(new Intent(AddEvent.this, MainActivity.class));
     }
 
     private void createColorPickerDialog() {
@@ -203,7 +221,6 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
-        dataManager = new DataManager(this);
         // Инициализация объектов activity
         initWidgets();
         initToolbar();
@@ -284,22 +301,6 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
 
     @Override
     public void onDialogDismissed(int dialogId) {
-
-    }
-
-    @Override
-    public void dataAdded() {
-        Log.d(TAG, "Успешно создана запись в бд");
-
-    }
-
-    @Override
-    public void errorAdded() {
-        Log.d(TAG, "Не создана запись в бд");
-    }
-
-    @Override
-    public void loadEventsBase(List<EventBase> events) {
 
     }
 
