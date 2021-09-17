@@ -123,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
                     calendarView.setEvents(eventDays);
                     Log.d(TAG, "CalendarView обновлён");
                 }
-
             }
         });
     }
@@ -140,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recView);
         // EventDataBase
         eventDataBase = EventDataBase.getInstance(this);
+        // Test
+
+
     }
 
     /**

@@ -1,6 +1,11 @@
 package com.example.cweather;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.cweather.Alarm.AlarmReceiver;
 import com.example.cweather.converters.Converter;
 import com.example.cweather.database.Event;
 import com.example.cweather.database.EventDataBase;
@@ -51,6 +57,8 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
     private LinearLayout btnStart, btnEnd, btnSelectRem, btnSelectColor;
     private Toolbar toolbar;
     private TextView textStart, textEnd, textSelectRem, textSelectColor;
+    private AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
 
     /**
      * Добавить часы и минуты
@@ -161,6 +169,75 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
 
     }
 
+
+    //    private void setAlarm() {
+//        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        Intent intent = new Intent(this, AlarmReceiver.class);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+//        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(),
+//                AlarmManager.INTERVAL_DAY, pendingIntent);
+//        Toast.makeText(AddEvent.this, "Alarm set Successfully", Toast.LENGTH_SHORT).show();
+//    }
+//
+//    private void cancelAlarm() {
+//        Intent intent = new Intent(AddEvent.this, AlarmReceiver.class);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+//        if (alarmManager == null) {
+//            alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//
+//        }
+//        alarmManager.cancel(pendingIntent);
+//        Toast.makeText(AddEvent.this, "Alarm cancelled", Toast.LENGTH_SHORT).show();
+//    }
+//
+//    }
+//    private void createNotificationChannel() {
+//        NotificationChannel channel = new NotificationChannel(Utils.CHANNEL_ID, Utils.CHANNEL_NAME,
+//                NotificationManager.IMPORTANCE_HIGH);
+//        channel.setDescription(Utils.CHANNEL_DESC);
+//
+//        NotificationManager manager = getSystemService(NotificationManager.class);
+//        manager.createNotificationChannel(channel);
+//    }
+
+//
+//    private PendingIntent getAlarmActionPendingIntent() {
+//        Intent intent = new Intent(this, AlarmReceiver.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        return PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//    }
+
+    private void createNotificationChannel() {
+        CharSequence name = "cweatherReminderChannel";
+        String description = "Channel For Alarm Manager";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel channel = new NotificationChannel("cweather", name, importance);
+        channel.setDescription(description);
+
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel);
+
+    }
+
+    private void setAlarmManager(Calendar calendar) {
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        Log.d(TAG, "Уведомление установлено успешно");
+
+    }
+
+    private void cancelAlarm() {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        if (alarmManager == null) {
+            alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        }
+        alarmManager.cancel(pendingIntent);
+    }
+
     /**
      * Добавить событие в базу данных
      */
@@ -182,6 +259,12 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
             @Override
             public void onComplete() {
                 Log.d(TAG, "Событие успешно добавлено");
+                startActivity(new Intent(AddEvent.this, MainActivity.class));
+                try {
+                    setAlarmManager(converter.fromStringToCalendar(textStart.getText().toString()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -189,7 +272,7 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
                 Log.e(TAG, e.getMessage());
             }
         });
-        startActivity(new Intent(AddEvent.this, MainActivity.class));
+
     }
 
     /**
@@ -214,6 +297,7 @@ public class AddEvent extends AppCompatActivity implements ColorPickerDialogList
         setContentView(R.layout.activity_add_event);
         initWidgets();
         initToolbar();
+        createNotificationChannel();
         // Получение даты
         long selectedDate = getIntent().getLongExtra("selectedDate", -1);
         date = converter.fromLongToString(selectedDate);
